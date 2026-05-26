@@ -51,7 +51,7 @@ app.get('/success.html', (req, res) => {
 });
 
 // Webhook endpoint to handle post-purchase logic
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 
@@ -68,12 +68,12 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
         console.log(`Processing successful payment for: ${customerEmail}`);
 
         // 1. Notify Admin
-        fulfillment.notifyAdmin(customerEmail);
+        await fulfillment.notifyAdmin(customerEmail);
 
         // 2. Automate Fulfillment
-        const account = fulfillment.getAvailableAccount();
+        const account = await fulfillment.getAvailableAccount();
         if (account) {
-            fulfillment.sendDeliveryEmail(customerEmail, account);
+            await fulfillment.sendDeliveryEmail(customerEmail, account);
             console.log(`Order fulfilled successfully for ${customerEmail}`);
         } else {
             console.error(`SHIT! No accounts available for ${customerEmail}. Admin notified for manual fulfillment.`);

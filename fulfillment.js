@@ -1,56 +1,60 @@
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config();
+const { kv } = require('@vercel/kv');
+const { Resend } = require('resend');
 
-const ACCOUNTS_FILE = path.join(__dirname, 'accounts.json');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Picks an available account from the pool and marks it as used.
+ * Picks an available account from the Redis list (atomic pop).
  */
-function getAvailableAccount() {
+async function getAvailableAccount() {
     try {
-        const data = fs.readFileSync(ACCOUNTS_FILE, 'utf8');
-        const accounts = JSON.parse(data);
-
-        const index = accounts.findIndex(acc => !acc.used);
-        if (index === -1) {
+        const accountData = await kv.lpop('b4_accounts');
+        if (!accountData) {
             return null; // No available accounts
         }
-
-        const account = accounts[index];
-        accounts[index].used = true;
-
-        fs.writeFileSync(ACCOUNTS_FILE, JSON.stringify(accounts, null, 4));
-
-        return account;
+        return typeof accountData === 'string' ? JSON.parse(accountData) : accountData;
     } catch (err) {
-        console.error('Error reading/writing accounts file:', err);
+        console.error('Error popping account from KV:', err);
         return null;
     }
 }
 
 /**
- * Simulates sending an email (in production, use Resend, SendGrid, etc.)
+ * Sends the delivery email using Resend
  */
 async function sendDeliveryEmail(customerEmail, accountData) {
-    console.log(`--- [EMAIL SIMULATION] ---`);
+    console.log(`--- [EMAIL INITIATED] ---`);
     console.log(`To: ${customerEmail}`);
-    console.log(`Subject: Your b4bestreview Netflix Access`);
-    console.log(`Content:`);
-    console.log(`Welcome to b4bestreview! Here are your Netflix credentials:`);
-    console.log(`Email: ${accountData.email}`);
-    console.log(`Password: ${accountData.password}`);
-    console.log(`--------------------------`);
 
-    // Placeholder for real email API call
-    /*
-    await resend.emails.send({
-      from: 'b4bestreview <noreply@b4bestreview.com>',
-      to: customerEmail,
-      subject: 'Your Netflix Access Details',
-      html: `<p>Enjoy your movies! User: ${accountData.email}, Pass: ${accountData.password}</p>`
-    });
-    */
-    return true;
+    // For Resend, the 'from' email must be verified in the domain configuration.
+    const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+
+    try {
+        const data = await resend.emails.send({
+            from: `b4bestreview <${fromEmail}>`,
+            to: [customerEmail],
+            subject: 'Your b4bestreview Streaming Access Details',
+            html: `
+            <div style="font-family: sans-serif; background-color: #f4f4f4; padding: 20px;">
+                <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <h2 style="color: #333; text-align: center;">Welcome to b4bestreview! 🍿</h2>
+                    <p style="color: #555; font-size: 16px;">Thank you for your purchase. Here are your streaming credentials:</p>
+                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #6366f1;">
+                        <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${accountData.email}</p>
+                        <p style="margin: 0;"><strong>Password:</strong> ${accountData.password}</p>
+                    </div>
+                    <p style="color: #777; font-size: 14px;">Enjoy your movies and shows! If you have any issues, reply to this email.</p>
+                </div>
+            </div>
+            `
+        });
+        console.log('Email sent successfully:', data);
+        return true;
+    } catch (error) {
+        console.error('Error sending email via Resend:', error);
+        return false;
+    }
 }
 
 /**
