@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>b4bestreview - Premium Movie & Streaming Tips</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body>
+    <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="setLanguage('es')">ES</button>
+    </div>
+
+    <section class="hero">
+        <div class="glass-card">
+            <div class="price-badge">$4.99</div>
+            <h1 id="hero-title" data-en="Get Netflix for $4.99" data-es="Obtén Netflix por $4.99">Get Netflix for $4.99
+            </h1>
+            <p id="hero-desc"
+                data-en="Premium access to your favorite shows and movies. Stop scrolling, start watching high-quality Netflix instantly. Account details delivered directly to your inbox."
+                data-es="Acceso premium a tus series y películas favoritas. Deja de buscar y empieza a disfrutar de Netflix en alta calidad al instante. Detalles de la cuenta enviados directamente a tu correo.">
+                Premium access to your favorite shows and movies. Stop scrolling, start watching high-quality Netflix
+                instantly. Account details delivered directly to your inbox.
+            </p>
+
+            <form id="checkout-form" class="cta-group">
+                <input type="email" id="email" placeholder="Enter your email" required
+                    data-en-placeholder="Enter your email" data-es-placeholder="Ingresa tu correo">
+                <button type="submit" class="btn-primary" id="cta-btn" data-en="Get Access Now"
+                    data-es="Obtener acceso ahora">Get Access Now</button>
+            </form>
+        </div>
+    </section>
+
+    <main class="features">
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3 data-en="Curated Picks" data-es="Selecciones Curadas">Curated Picks</h3>
+                <p data-en="Hand-picked recommendations based on your mood. No algorithms, just pure cinema love."
+                    data-es="Recomendaciones seleccionadas a mano según tu ánimo. Sin algoritmos, solo amor al cine.">
+                    Hand-picked recommendations based on your mood. No algorithms, just pure cinema love.
+                </p>
+            </div>
+            <div class="feature-card">
+                <h3 data-en="Streaming Hacks" data-es="Trucos de Streaming">Streaming Hacks</h3>
+                <p data-en="Learn how to get the best quality, hidden categories, and save on your subscriptions."
+                    data-es="Aprende a obtener la mejor calidad, categorías ocultas y ahorra en tus suscripciones.">
+                    Learn how to get the best quality, hidden categories, and save on your subscriptions.
+                </p>
+            </div>
+            <div class="feature-card">
+                <h3 data-en="Review Insider" data-es="Reseñas Exclusivas">Review Insider</h3>
+                <p data-en="Deep dives into the latest releases to help you decide what's worth your time."
+                    data-es="Análisis profundos de los últimos lanzamientos para ayudarte a decidir qué vale tu tiempo.">
+                    Deep dives into the latest releases to help you decide what's worth your time.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 b4bestreview.com | <span data-en="Elevate your experience."
+                data-es="Eleva tu experiencia.">Elevate your experience.</span></p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

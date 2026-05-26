@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "email": "netflix_premium_1@example.com",
+        "password": "SecurePassword123!",
+        "used": true
+    },
+    {
+        "id": 2,
+        "email": "netflix_premium_2@example.com",
+        "password": "EnjoyMovies2026!",
+        "used": true
+    },
+    {
+        "id": 3,
+        "email": "netflix_premium_3@example.com",
+        "password": "B4BestReview99!",
+        "used": false
+    }
+]
