@@ -13,6 +13,11 @@ app.use(express.json());
 
 const DOMAIN = process.env.DOMAIN || 'http://localhost:3000';
 
+// Expose publishable key to frontend safely
+app.get('/config', (req, res) => {
+    res.json({ publishableKey: process.env.STRIPE_PUBLISHABLE_KEY });
+});
+
 app.post('/create-checkout-session', async (req, res) => {
     const { email } = req.body;
 

@@ -26,11 +26,16 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const ctaBtn = document.getElementById('cta-btn');
-    
+
     ctaBtn.disabled = true;
     ctaBtn.textContent = savedLang === 'en' ? 'Processing...' : 'Procesando...';
 
     try {
+        // 1. Fetch the real publishable key from the server
+        const configResponse = await fetch('/config');
+        const { publishableKey } = await configResponse.json();
+
+        // 2. Create the checkout session
         const response = await fetch('/create-checkout-session', {
             method: 'POST',
             headers: {
@@ -40,8 +45,10 @@ form.addEventListener('submit', async (e) => {
         });
 
         const session = await response.json();
-        
-        const stripe = Stripe('pk_test_placeholder'); // The real key should be injected or handled via env
+        if (session.error) throw new Error(session.error);
+
+        // 3. Redirect to Stripe Checkout
+        const stripe = Stripe(publishableKey);
         const result = await stripe.redirectToCheckout({
             sessionId: session.id,
         });
@@ -58,3 +65,4 @@ form.addEventListener('submit', async (e) => {
         ctaBtn.textContent = savedLang === 'en' ? 'Get Access Now' : 'Obtener acceso ahora';
     }
 });
+
